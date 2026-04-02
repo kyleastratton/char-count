@@ -1,552 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>modern · text scope</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>modern · text scope</title>
 
-    body {
-      background: #f1f5f9;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#f1f5f9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.card{max-width:1000px;width:100%;background:white;border-radius:2rem;box-shadow:0 20px 40px -10px rgba(0,20,30,0.15),0 8px 20px rgba(0,0,0,0.05);padding:2rem}
 
-    .card {
-      max-width: 1000px;
-      width: 100%;
-      background: white;
-      border-radius: 2rem;
-      box-shadow: 0 20px 40px -10px rgba(0, 20, 30, 0.15), 0 8px 20px rgba(0,0,0,0.05);
-      padding: 2rem 2rem 2.5rem;
-      transition: all 0.2s;
-    }
+h1{font-size:1.8rem;font-weight:600;color:#0a1e2f;margin-bottom:.3rem}
+.sub{color:#3f5569;margin-bottom:1.5rem}
 
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: #0a1e2f;
-      margin-bottom: 0.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+.toggle-panel{display:flex;gap:1.5rem;margin-bottom:1rem}
+.toggle-item{display:flex;gap:.5rem;align-items:center;font-size:.9rem}
 
-    h1 span {
-      background: #e8edf3;
-      color: #1e3b5c;
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 0.2rem 0.9rem;
-      border-radius: 40px;
-      letter-spacing: normal;
-    }
+textarea{width:100%;height:180px;padding:1rem;border-radius:20px;border:2px solid #dde7f0;margin-bottom:1.5rem}
 
-    .sub {
-      color: #3f5569;
-      font-size: 0.95rem;
-      margin-bottom: 1.75rem;
-      border-left: 4px solid #93b7d8;
-      padding-left: 1rem;
-      background: #f8fafd;
-      border-radius: 0 12px 12px 0;
-      line-height: 1.4;
-      width: fit-content;
-      padding: 0.5rem 1.2rem 0.5rem 1rem;
-    }
+.count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:#f2f7fc;padding:1rem;border-radius:1rem;text-align:center}
 
-    /* toggles */
-    .toggle-panel {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      background: #f8fbfe;
-      padding: 1.2rem 1.5rem;
-      border-radius: 2rem;
-      margin-bottom: 2rem;
-      align-items: center;
-      border: 1px solid #e1eaf1;
-    }
+.section{background:#f9fdff;border-radius:1.5rem;padding:1.2rem;border:1px solid #cee2ef;margin-top:1.5rem}
 
-    .toggle-item {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
+/* density */
+.density-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.density-char{min-width:24px;text-align:center;background:#e3eff9;border-radius:6px}
+.density-bar{flex:1;height:10px;background:#e5edf5;border-radius:20px;overflow:hidden}
+.density-fill{height:100%;background:#5d95bb}
+.density-count{min-width:30px;text-align:right;font-size:.8rem}
 
-    .toggle-item span {
-      font-weight: 500;
-      color: #1e3b5c;
-      font-size: 0.95rem;
-    }
+/* index */
+.index-chunk{margin-bottom:.6rem; margin-bottom: 1rem;}
+.index-row{display:flex;gap:.35rem}
+.index-cell{min-width:28px;text-align:center;font-size:.7rem;color:#4a6a80}
+.char-cell{min-width:28px;text-align:center;font-size:.9rem;background:#e8f1f8;border-radius:6px;padding:.2rem 0}
 
-    .toggle-item label {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      cursor: pointer;
-      color: #2f4d6e;
-      font-weight: 450;
-      user-select: none;
-    }
-
-    .toggle-item input[type="checkbox"] {
-      width: 1.1rem;
-      height: 1.1rem;
-      accent-color: #2d6f9c;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    /* textarea */
-    .input-area {
-      margin-bottom: 2.2rem;
-    }
-
-    .input-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 0.6rem;
-    }
-
-    .input-header label {
-      font-weight: 600;
-      color: #0b2b41;
-      font-size: 1rem;
-    }
-
-    .input-header .clear-btn {
-      background: none;
-      border: none;
-      color: #628da0;
-      font-size: 0.9rem;
-      cursor: pointer;
-      padding: 0.2rem 0.8rem;
-      border-radius: 30px;
-      transition: all 0.1s;
-      font-weight: 450;
-      border: 1px solid transparent;
-    }
-
-    .input-header .clear-btn:hover {
-      background: #e2ecf5;
-      color: #0a3147;
-      border-color: #cbdbe9;
-    }
-
-    textarea {
-      width: 100%;
-      height: 200px;
-      padding: 1.2rem 1.4rem;
-      font-size: 1rem;
-      line-height: 1.5;
-      background: white;
-      border: 2px solid #dde7f0;
-      border-radius: 28px;
-      resize: vertical;
-      outline: none;
-      transition: border 0.15s, box-shadow 0.2s;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
-    }
-
-    textarea:focus {
-      border-color: #7fa9c7;
-      box-shadow: 0 0 0 4px rgba(106, 155, 200, 0.15);
-    }
-
-    /* counters grid */
-    .count-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.2rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .stat-card {
-      background: #f2f7fc;
-      padding: 1.1rem 1rem;
-      border-radius: 1.8rem;
-      text-align: center;
-      border: 1px solid #ddeaf3;
-      backdrop-filter: blur(2px);
-      transition: all 0.2s;
-    }
-
-    .stat-card:hover {
-      background: #ecf3fa;
-      border-color: #b5cfdf;
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-      font-weight: 600;
-      color: #57758c;
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-number {
-      font-size: 2.1rem;
-      font-weight: 600;
-      color: #0a293f;
-      line-height: 1.2;
-    }
-
-    .stat-desc {
-      font-size: 0.75rem;
-      color: #6b879d;
-      margin-top: 0.2rem;
-    }
-
-    /* density section */
-    .density {
-      background: #f9fdff;
-      border-radius: 2rem;
-      padding: 1.5rem 1.6rem;
-      border: 1px solid #cee2ef;
-    }
-
-    .density-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.2rem;
-    }
-
-    .density-header h3 {
-      font-weight: 600;
-      color: #143549;
-      font-size: 1.25rem;
-      letter-spacing: -0.01em;
-    }
-
-    .density-header .badge {
-      background: #d3e3f0;
-      color: #103247;
-      font-size: 0.8rem;
-      font-weight: 500;
-      padding: 0.2rem 1rem;
-      border-radius: 30px;
-    }
-
-    .density-bars {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 0.4rem;
-    }
-
-    .density-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.95rem;
-    }
-
-    .density-char {
-      min-width: 2.2rem;
-      font-weight: 600;
-      color: #1b4b68;
-      background: #e3eff9;
-      padding: 0.2rem 0;
-      border-radius: 30px;
-      text-align: center;
-      font-size: 0.95rem;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
-    }
-
-    .density-bar-container {
-      flex: 1;
-      height: 2rem;
-      background: #e5edf5;
-      border-radius: 40px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 4px #cadce8;
-      display: flex;
-    }
-
-    .density-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #5d95bb, #3279a8);
-      width: 0%;
-      border-radius: 40px;
-      transition: width 0.25s ease;
-      box-shadow: 0 2px 6px rgba(40, 100, 140, 0.3);
-    }
-
-    .density-count {
-      min-width: 2.5rem;
-      text-align: right;
-      font-weight: 550;
-      color: #154256;
-      background: #eaf3fb;
-      padding: 0.2rem 0.9rem;
-      border-radius: 40px;
-      font-size: 0.85rem;
-    }
-
-    /* small screen */
-    @media (max-width: 700px) {
-      body { padding: 0.8rem; }
-      .card { padding: 1.5rem; }
-      .count-grid { grid-template-columns: 1fr 1fr; gap: 0.9rem; }
-      .toggle-panel { gap: 1rem; flex-direction: column; align-items: flex-start; }
-    }
-    @media (max-width: 430px) {
-      .count-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+</style>
 </head>
+
 <body>
 <div class="card">
-  <h1>txtscope <span>real‑time</span></h1>
-  <div class="sub">character & sentence analysis · with density explorer</div>
+<h1>txtscope</h1>
+<div class="sub">character & sentence analysis · with density + index</div>
 
-  <!-- TOGGLES (both on by default) -->
-  <div class="toggle-panel">
-    <div class="toggle-item">
-      <span>🔤 count spaces</span>
-      <label>
-        <input type="checkbox" id="toggleSpaces" checked> on
-      </label>
-    </div>
-    <div class="toggle-item">
-      <span>⚙️ count special chars</span>
-      <label>
-        <input type="checkbox" id="toggleSpecial" checked> on
-      </label>
-    </div>
-    <div style="margin-left: auto; font-size:0.9rem; color:#40637c;">both default ON</div>
-  </div>
+<textarea id="textInput">Hello world! This is a modern text analyzer.</textarea>
 
-  <!-- INPUT -->
-  <div class="input-area">
-    <div class="input-header">
-      <label for="textInput">📝 insert your text</label>
-      <button class="clear-btn" id="clearText">clear</button>
-    </div>
-    <textarea id="textInput" placeholder="Write or paste anything ..." autofocus>Hello world! This is a modern text analyzer. It counts characters, words, sentences... And even shows letter density (including special characters). Check it out: email@test.com #text-analysis 3.14 (pi) — excited?</textarea>
-  </div>
+<div class="toggle-panel">
+  <div class="toggle-item"><label><input type="checkbox" id="toggleSpaces" checked> count spaces</label></div>
+  <div class="toggle-item"><label><input type="checkbox" id="toggleSpecial" checked> count special chars</label></div>
+</div>
 
-  <!-- STATS GRID -->
-  <div class="count-grid">
-    <div class="stat-card" id="charCard">
-      <div class="stat-label">characters</div>
-      <div class="stat-number" id="charCount">0</div>
-      <div class="stat-desc" id="charDesc">spaces & specials included</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">words</div>
-      <div class="stat-number" id="wordCount">0</div>
-      <div class="stat-desc">split by spaces</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">sentences</div>
-      <div class="stat-number" id="sentenceCount">0</div>
-      <div class="stat-desc">terminators . ! ? …</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">paragraphs</div>
-      <div class="stat-number" id="paragraphCount">0</div>
-      <div class="stat-desc">by line breaks</div>
-    </div>
-  </div>
+<div class="count-grid">
+<div class="stat-card"><div id="charCount">0</div><div>characters</div></div>
+<div class="stat-card"><div id="wordCount">0</div><div>words</div></div>
+<div class="stat-card"><div id="sentenceCount">0</div><div>sentences</div></div>
+<div class="stat-card"><div id="paragraphCount">0</div><div>paragraphs</div></div>
+</div>
 
-  <!-- LETTER DENSITY -->
-  <div class="density">
-    <div class="density-header">
-      <h3>📊 character density</h3>
-      <div class="badge">includes specials & letters</div>
-    </div>
-    <div class="density-bars" id="densityContainer">
-      <!-- dynamically injected rows -->
-      <div style="color:#628698; padding:0.5rem; text-align:center;">waiting for text...</div>
-    </div>
-  </div>
+<!-- DENSITY -->
+<div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;font-size:.9rem;color:#2f4d6e">
+  <label><input type="checkbox" id="caseSensitiveToggle"> case-sensitive</label>
+</div>
+<div class="section">
+<h3 style="margin-bottom:.6rem">📊 character density</h3>
+<div id="densityContainer"></div>
+</div>
+
+<!-- INDEX -->
+<div class="section">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+<h3>🔢 string index</h3>
+<label><input type="checkbox" id="indexBaseToggle"> 1-based</label>
+</div>
+<div id="indexContainer"></div>
+</div>
+
 </div>
 
 <script>
-  (function() {
-    // DOM elements
-    const textarea = document.getElementById('textInput');
-    const toggleSpaces = document.getElementById('toggleSpaces');
-    const toggleSpecial = document.getElementById('toggleSpecial');
-    const clearBtn = document.getElementById('clearText');
+const textarea=document.getElementById('textInput');
+const toggleSpaces=document.getElementById('toggleSpaces');
+const toggleSpecial=document.getElementById('toggleSpecial');
 
-    const charSpan = document.getElementById('charCount');
-    const wordSpan = document.getElementById('wordCount');
-    const sentenceSpan = document.getElementById('sentenceCount');
-    const paraSpan = document.getElementById('paragraphCount');
-    const charDesc = document.getElementById('charDesc');
-    const densityContainer = document.getElementById('densityContainer');
+const charSpan=document.getElementById('charCount');
+const wordSpan=document.getElementById('wordCount');
+const sentenceSpan=document.getElementById('sentenceCount');
+const paraSpan=document.getElementById('paragraphCount');
 
-    // Helper: update character description based on toggles
-    function updateCharDesc() {
-      const spacesOn = toggleSpaces.checked;
-      const specialOn = toggleSpecial.checked;
-      if (spacesOn && specialOn) charDesc.innerText = 'spaces & specials counted';
-      else if (!spacesOn && !specialOn) charDesc.innerText = 'only letters/digits (no spaces/special)';
-      else if (spacesOn && !specialOn) charDesc.innerText = 'spaces ON, specials OFF';
-      else charDesc.innerText = 'specials ON, spaces OFF';
-    }
+const densityContainer=document.getElementById('densityContainer');
+const caseSensitiveToggle=document.getElementById('caseSensitiveToggle');
+const indexContainer=document.getElementById('indexContainer');
+const indexBaseToggle=document.getElementById('indexBaseToggle');
 
-    // main update function
-    function refreshAll() {
-      const raw = textarea.value;
+function refreshAll(){
+const raw=textarea.value;
 
-      // ----- counts (respect toggles) -----
-      const countSpaces = toggleSpaces.checked;
-      const countSpecial = toggleSpecial.checked;
+// character logic
+let chars=0;
+for(let ch of raw){
+const isSpace=/\s/.test(ch);
+const isSpecial=/[^a-zA-Z0-9\s]/.test(ch);
 
-      // character count logic
-      let charTotal = 0;
-      if (!countSpaces && !countSpecial) {
-        // only keep letters (a-zA-Z) and digits (0-9)
-        const filtered = raw.replace(/[^a-zA-Z0-9]/g, '');
-        charTotal = filtered.length;
-      } else if (countSpaces && !countSpecial) {
-        // keep spaces, but remove special chars (anything not letter/digit/space)
-        const filtered = raw.replace(/[^\w\s]/gi, '');  // \w = [A-Za-z0-9_], but _ is special? we treat _ as special? Usually special includes _. we define 'special' as anything not letter, not digit, not space.
-        // more precise: special characters: anything except a-z, A-Z, 0-9, space. So keep exactly those.
-        let filtered2 = '';
-        for (let ch of raw) {
-          const code = ch.charCodeAt(0);
-          const isLetter = (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
-          const isDigit = (code >= 48 && code <= 57);
-          const isSpace = ch === ' ' || ch === '\n' || ch === '\t' || ch === '\r'; // include tab, newline as space? we treat all whitespace as spaces for char toggle? For clarity: "spaces" means whitespace (space, newline, tab, carriage return). 
-          if (isLetter || isDigit || (countSpaces && isSpace)) {
-            filtered2 += ch;
-          }
-        }
-        charTotal = filtered2.length;
-      } else if (!countSpaces && countSpecial) {
-        // exclude spaces, but keep specials (including punctuation)
-        let filtered = '';
-        for (let ch of raw) {
-          const isSpace = ch === ' ' || ch === '\n' || ch === '\t' || ch === '\r';
-          if (!isSpace) filtered += ch; // keep everything except whitespace
-        }
-        charTotal = filtered.length;
-      } else { // both true
-        charTotal = raw.length; // all characters
-      }
+if(!toggleSpaces.checked && isSpace) continue;
+if(!toggleSpecial.checked && isSpecial) continue;
+chars++;
+}
 
-      charSpan.innerText = charTotal;
+charSpan.innerText=chars;
+wordSpan.innerText=raw.split(/\s+/).filter(Boolean).length;
+sentenceSpan.innerText=(raw.match(/[.!?]+/g)||[]).length;
+paraSpan.innerText=raw.trim()?raw.split(/\n+/).length:0;
 
-      // words (simple but robust: split by whitespace, exclude empty)
-      const words = raw.split(/\s+/).filter(w => w.length > 0);
-      wordSpan.innerText = words.length;
+renderDensity(raw);
+renderIndex(raw);
+}
 
-      // sentences (count ., !, ?, …, also maybe ellipsis as one)
-      const sentenceEnds = raw.match(/[.!?…]+(\s|$)|[。？！]/g); // also catches basic asian marks? but fine.
-      let sentenceCount = 0;
-      if (sentenceEnds) {
-        // each match is a group, but we want to count them, not overlapping
-        sentenceCount = sentenceEnds.length;
-      } else {
-        // fallback: if no punctuation but text nonempty → maybe 0? we stick to 0.
-      }
-      // Additional: if text ends with sentence end but not captured? The regex captures '! ' etc. fine.
-      sentenceSpan.innerText = sentenceCount;
+function renderDensity(text){
+  const caseSensitive = caseSensitiveToggle.checked;
+  if(!caseSensitive) text = text.toLowerCase();
+if(!text){densityContainer.innerHTML='type something';return}
 
-      // paragraphs: split by one or more blank lines (double newline)
-      const blocks = raw.split(/\n\s*\n/);
-      const nonEmptyParagraphs = blocks.filter(block => block.trim().length > 0);
-      paraSpan.innerText = nonEmptyParagraphs.length || (raw.trim().length > 0 ? 1 : 0); // at least 1 if nonempty
+const map={};
+for(let ch of text){
+if(ch==='\n'||ch==='\t') continue;
+map[ch]=(map[ch]||0)+1;
+}
 
-      // ----- density (special & letters included, but toggle doesn't affect density) -----
-      // density always shows frequency of EVERY character (including spaces, newline, tabs) but better to show printable?
-      // We'll count every character except we exclude newlines/tabs for cleaner density? But specification: "Letter density (incl. Special characters etc)" So include all.
-      // However showing \n \r\t might look messy. We filter to show characters that appear, but collapse whitespace as "space" for readability.
-      // Approach: count all characters, but map newline/tab to "␤" (symbol) and combine multiple whitespace types? we create a simplified map.
-      const freq = new Map();
+const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]);
+const max=sorted[0][1];
 
-      // process raw: we treat each character (including spaces, newlines, tabs) as distinct.
-      for (let ch of raw) {
-        let displayChar = ch;
-        // optional: make whitespace visible: 
-        if (ch === ' ') displayChar = '·';      // show middle dot for space
-        else if (ch === '\n') displayChar = '↵'; // newline symbol
-        else if (ch === '\t') displayChar = '→'; // tab symbol
-        else if (ch === '\r') displayChar = '␍'; // rare
+let html='';
+for(let [char,count] of sorted.slice(0,20)){
+const width=(count/max)*100;
+html+=`<div class="density-row">
+<span class="density-char">${char===' '?'␣':char}</span>
+<div class="density-bar"><div class="density-fill" style="width:${width}%"></div></div>
+<span class="density-count">${count}</span>
+</div>`;
+}
 
-        freq.set(displayChar, (freq.get(displayChar) || 0) + 1);
-      }
+densityContainer.innerHTML=html;
+}
 
-      // convert to sorted array (by count desc)
-      const sorted = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]);
+function renderIndex(text){
+if(!text){indexContainer.innerHTML='<div style="color:#628698">type something...</div>';return}
 
-      // get max count for scaling (width percentage)
-      const maxCount = sorted.length > 0 ? sorted[0][1] : 0;
+const oneBased=indexBaseToggle.checked;
+const chunkSize=20;
+let html='';
 
-      // render density rows
-      if (sorted.length === 0) {
-        densityContainer.innerHTML = `<div style="color:#628698; padding:0.5rem; text-align:center;">✨ type something to see density</div>`;
-        return;
-      }
+for(let start=0;start<text.length;start+=chunkSize){
+const slice=text.slice(start,start+chunkSize);
+let indexRow='<div class="index-row">';
+let charRow='<div class="index-row">';
 
-      let htmlRows = '';
-      for (let [char, count] of sorted.slice(0, 25)) { // limit to 25 for readability
-        const widthPercent = maxCount ? (count / maxCount) * 100 : 0;
-        // escape special html in char if needed (e.g. '<', '>', '&')
-        let safeChar = char;
-        if (char === '&') safeChar = '&amp;';
-        else if (char === '<') safeChar = '&lt;';
-        else if (char === '>') safeChar = '&gt;';
-        else if (char === '"') safeChar = '&quot;';
-        // for space (·) we already set. But we also need to handle original if needed.
+for(let i=0;i<slice.length;i++){
+const idx=start+i;
+let ch=slice[i];
+if(ch===' ') ch='&nbsp;';
+else if(ch==='\n') ch='↵';
 
-        htmlRows += `
-          <div class="density-row">
-            <span class="density-char">${safeChar}</span>
-            <div class="density-bar-container">
-              <div class="density-fill" style="width: ${widthPercent}%;"></div>
-            </div>
-            <span class="density-count">${count}</span>
-          </div>
-        `;
-      }
+indexRow+=`<div class="index-cell">${oneBased?idx+1:idx}</div>`;
+charRow+=`<div class="char-cell">${ch}</div>`;
+}
 
-      if (sorted.length > 25) {
-        htmlRows += `<div style="font-size:0.8rem; color:#476e88; padding-top:0.3rem;">+ ${sorted.length - 25} more characters (shown top 25)</div>`;
-      }
+html+=`<div class="index-chunk">${indexRow}</div><div class="index-chunk">${charRow}</div>`;
+}
 
-      densityContainer.innerHTML = htmlRows;
-      updateCharDesc();
-    }
+indexContainer.innerHTML=html;
+}
 
-    // initial update
-    refreshAll();
+textarea.addEventListener('input',refreshAll);
+caseSensitiveToggle.addEventListener('change',refreshAll);
+toggleSpaces.addEventListener('change',refreshAll);
+toggleSpecial.addEventListener('change',refreshAll);
+indexBaseToggle.addEventListener('change',refreshAll);
 
-    // attach event listeners
-    textarea.addEventListener('input', refreshAll);
-    toggleSpaces.addEventListener('change', refreshAll);
-    toggleSpecial.addEventListener('change', refreshAll);
-    clearBtn.addEventListener('click', () => {
-      textarea.value = '';
-      refreshAll();
-      textarea.focus();
-    });
-
-    // optional: update description on toggle but already called in refreshAll
-    window.addEventListener('load', () => {
-      updateCharDesc();
-    });
-  })();
+refreshAll();
 </script>
+
 </body>
 </html>
